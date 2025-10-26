@@ -123,39 +123,61 @@ app = FastAPI(
 )
 
 
-@app.get(
-    "/",
-    summary="Verify WhatsApp webhook",
-    description="Handles WhatsApp webhook verification requests from Meta",
-)
+# @app.get(
+#     "/",
+#     summary="Verify WhatsApp webhook",
+#     description="Handles WhatsApp webhook verification requests from Meta",
+# )
+# async def verify_webhook(request: Request):
+#     """Verify WhatsApp webhook endpoint.
+
+#     This endpoint is called by Meta's WhatsApp Business API to verify
+#     the webhook URL during setup. It validates the verification token
+#     and returns the challenge parameter if successful.
+
+#     Args:
+#         request: FastAPI request object containing query parameters
+
+#     Returns:
+#         dict: Verification response or challenge string
+
+#     Raises:
+#         HTTPException: 403 if verification token is invalid
+#     """
+#     params = dict(request.query_params)
+#     logger.debug(f"Webhook verification request received with params: {list(params.keys())}")
+
+#     try:
+#         result = await whatsapp_client.handle_verify_webhook_request(
+#             params=params, expected_verification_token=WHATSAPP_WEBHOOK_VERIFICATION_TOKEN
+#         )
+#         logger.info("Webhook verification successful")
+#         return result
+#     except ValueError as e:
+#         logger.warning(f"Webhook verification failed: {e}")
+#         raise HTTPException(status_code=403, detail="Verification failed")
+
+@app.get("/")
 async def verify_webhook(request: Request):
-    """Verify WhatsApp webhook endpoint.
-
-    This endpoint is called by Meta's WhatsApp Business API to verify
-    the webhook URL during setup. It validates the verification token
-    and returns the challenge parameter if successful.
-
-    Args:
-        request: FastAPI request object containing query parameters
-
-    Returns:
-        dict: Verification response or challenge string
-
-    Raises:
-        HTTPException: 403 if verification token is invalid
-    """
     params = dict(request.query_params)
     logger.debug(f"Webhook verification request received with params: {list(params.keys())}")
 
-    try:
-        result = await whatsapp_client.handle_verify_webhook_request(
-            params=params, expected_verification_token=WHATSAPP_WEBHOOK_VERIFICATION_TOKEN
-        )
-        logger.info("Webhook verification successful")
-        return result
-    except ValueError as e:
-        logger.warning(f"Webhook verification failed: {e}")
-        raise HTTPException(status_code=403, detail="Verification failed")
+    # WhatsApp sends parameters with 'hub.' prefix
+    verify_token = params.get("hub.verify_token")
+    challenge = params.get("hub.challenge")
+    mode = params.get("hub.mode")
+
+    if not all([verify_token, challenge, mode]):
+        logger.warning("Webhook verification failed: Missing required webhook verification parameters")
+        raise HTTPException(status_code=403, detail="Missing verification parameters")
+
+    if verify_token != WHATSAPP_WEBHOOK_VERIFICATION_TOKEN:
+        logger.warning(f"Webhook verification failed: Invalid token. Expected: {WHATSAPP_WEBHOOK_VERIFICATION_TOKEN}, Got: {verify_token}")
+        raise HTTPException(status_code=403, detail="Invalid verify token")
+
+    logger.info("Webhook verification successful")
+    return int(challenge)  # Return challenge as integer, not string
+
 
 
 @app.post(
