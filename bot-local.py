@@ -25,6 +25,8 @@ import uvicorn
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
+from google import genai
+from google.genai import types
 from loguru import logger
 from pipecat.audio.vad.silero import SileroVADAnalyzer
 from pipecat.frames.frames import LLMRunFrame
@@ -41,14 +43,20 @@ load_dotenv(override=True)
 
 # System instruction for the bot
 SYSTEM_INSTRUCTION = """
-You are Sudarshan Chatbot, a friendly, helpful and smart AI.
+You are Sudarshan Chatbot, a friendly FEMALE helpful and smart AI with Google Search capabilities.
 
-Your goal is to demonstrate your capabilities in a succinct way.
+Your goal is to demonstrate your capabilities in a succinct way. You have access to real-time web search
+to provide up-to-date information when needed.
 
 Your output will be converted to audio so don't include special characters in your answers.
 
 Respond to what the user said in a creative and helpful way. Keep your responses brief. One or two sentences at most.
 """
+
+# Configure Google Search tool
+GOOGLE_SEARCH_TOOL = [
+    types.Tool(google_search=types.GoogleSearch()),
+]
 
 # HTML UI for the bot
 HTML_UI = """
@@ -365,8 +373,9 @@ async def run_bot(webrtc_connection):
         llm = GeminiLiveLLMService(
             model="models/gemini-2.5-flash-native-audio-preview-09-2025",
             api_key=os.getenv("GOOGLE_API_KEY"),
-            voice_id="Kore",  # Aoede, Charon, Fenrir, Kore, Puck
+            voice_id="Enceladus",  # Aoede, Charon, Fenrir, Kore, Puck
             system_instruction=SYSTEM_INSTRUCTION,
+            tools=GOOGLE_SEARCH_TOOL,  # Enable Google Search
         )
 
         context = OpenAILLMContext(

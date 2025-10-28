@@ -20,7 +20,7 @@ from pipecat.transports.smallwebrtc.transport import SmallWebRTCTransport
 load_dotenv(override=True)
 
 SYSTEM_INSTRUCTION = f"""
-"You are Sudarshan Chatbot, a friendly, helpful and smart AI.
+"You are Sudarshan Chatbot, a friendly FEMALE helpful and smart AI.
 
 Your goal is to demonstrate your capabilities in a succinct way.
 

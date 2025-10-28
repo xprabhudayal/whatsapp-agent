@@ -5,6 +5,7 @@ description = "A real-time voice bot that integrates with WhatsApp Business API"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "google-genai>=1.46.0",
     "pipecat-ai[google,silero,webrtc]>=0.0.83",
 ]
 
