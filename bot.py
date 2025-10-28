@@ -20,7 +20,7 @@ from pipecat.transports.smallwebrtc.transport import SmallWebRTCTransport
 load_dotenv(override=True)
 
 SYSTEM_INSTRUCTION = f"""
-"You are Gemini Chatbot, a friendly, helpful robot.
+"You are Sudarshan Chatbot, a friendly, helpful and smart AI.
 
 Your goal is to demonstrate your capabilities in a succinct way.
 
@@ -42,8 +42,9 @@ async def run_bot(webrtc_connection):
     )
 
     llm = GeminiLiveLLMService(
+        model="models/gemini-2.5-flash-native-audio-preview-09-2025",
         api_key=os.getenv("GOOGLE_API_KEY"),
-        voice_id="Charon",  # Aoede, Charon, Fenrir, Kore, Puck
+        voice_id="Kore",  # Aoede, Charon, Fenrir, Kore, Puck
         system_instruction=SYSTEM_INSTRUCTION,
     )
 
@@ -51,7 +52,7 @@ async def run_bot(webrtc_connection):
         [
             {
                 "role": "user",
-                "content": "Start by greeting the user warmly and introducing yourself.",
+                "content": "Start by greeting the user warmly in Hindi and introducing yourself.",
             }
         ],
     )
