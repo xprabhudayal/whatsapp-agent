@@ -43,7 +43,8 @@ from pipecat.transports.smallwebrtc.connection import SmallWebRTCConnection
 from pipecat.transports.whatsapp.api import WhatsAppWebhookRequest
 from pipecat.transports.whatsapp.client import WhatsAppClient
 
-from bot import run_bot
+# from bot import run_bot
+from bot_local import run_bot
 
 # Load environment variables first
 load_dotenv(override=True)
